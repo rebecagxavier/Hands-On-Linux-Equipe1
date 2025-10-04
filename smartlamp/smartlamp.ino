@@ -4,9 +4,9 @@
 int ledPin;
 int ledValue;
 
-int ldrPin;
+int ldrPin = 34;
 // Faça testes no sensor ldr para encontrar o valor maximo e atribua a variável ldrMax
-int ldrMax;
+int ldrMax = 4095;
 
 void setup() {
     Serial.begin(9600);
@@ -23,6 +23,10 @@ void setup() {
 void loop() {
     //Obtenha os comandos enviados pela serial 
     //e processe-os com a função processCommand
+    int sensor_ldr = ldrGetValue();
+    Serial.print("Valor LDR: ");
+    Serial.println(sensor_ldr);
+    delay(500);
 }
 
 
@@ -41,4 +45,7 @@ int ldrGetValue() {
     // Leia o sensor LDR e retorne o valor normalizado entre 0 e 100
     // faça testes para encontrar o valor maximo do ldr (exemplo: aponte a lanterna do celular para o sensor)       
     // Atribua o valor para a variável ldrMax e utilize esse valor para a normalização
+    int valorLDR = analogRead(ldrPin);
+
+    return valorLDR;
 }
