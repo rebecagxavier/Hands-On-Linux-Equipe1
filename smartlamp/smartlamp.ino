@@ -1,3 +1,8 @@
+
+#include <Arduino.h>
+
+#define LED_BUILTIN 2  
+
 #define MODE_MANUAL 0
 #define MODE_AUTO   1
 
@@ -20,12 +25,12 @@ void setup() {
         delay(50);
     }
 
-    ledcSetup(1, 5000, 8);
-    ledcAttachPin(LED_BUILTIN, 1); // Led Builtin aceita PWM no ESP32
+//    ledcSetup(1, 5000, 8);
+//    ledcAttachPin(LED_BUILTIN, 1); // Led Builtin aceita PWM no ESP32
     
     pinMode(ledPin, OUTPUT);
-    ledcSetup(ledChannel, 5000, 8);
-    ledcAttachPin(ledPin, ledChannel);
+//    ledcSetup(ledChannel, 5000, 8);
+//    ledcAttachPin(ledPin, ledChannel);
     
     Serial.printf("DBG SmartLamp Initialized.\n");
 }
@@ -54,10 +59,10 @@ void processCommand(String command) {
     command.trim();
     command.toUpperCase();
 
-    // Serial.println("DBG Received command: " + command);
+     Serial.println("DBG Received command: " + command);
 
-    if (command.startsWith("SET_LED ")) {
-        int ledTmp = command.substring(8).toInt();
+    if (command.startsWith("SET_LED")) {
+        int ledTmp = command.substring(7).toInt();
         if (ledTmp >= 0 && ledTmp <= 100) {
             ledValue = ledTmp;
             ledMode  = MODE_MANUAL;
@@ -68,7 +73,7 @@ void processCommand(String command) {
             Serial.printf("RES SET_LED -1\n");
         }
     }
-    else if (command.startsWith("SET_THRESHOLD ")) {
+    else if (command.startsWith("SET_THRESHOLD")) {
         int thresholdTmp = command.substring(14).toInt();
         if (thresholdTmp >= 0 && thresholdTmp <= 100) {
             thresholdValue = thresholdTmp;
@@ -98,12 +103,14 @@ void processCommand(String command) {
 
 void ledUpdate() {
     if (ledMode == MODE_MANUAL || (ledMode == MODE_AUTO && ldrGetValue() < thresholdValue)) {
-        ledcWrite(ledChannel, 255.0*(ledValue/100.0));
-        ledcWrite(1, 255.0*(ledValue/100.0));
+//        ledcWrite(ledChannel, 255.0*(ledValue/100.0));
+//        ledcWrite(1, 255.0*(ledValue/100.0));
+          digitalWrite(LED_BUILTIN, HIGH);
     }
     else {
-        ledcWrite(ledChannel, 0);
-        ledcWrite(1, 0);
+//        ledcWrite(ledChannel, 0);
+//        ledcWrite(1, 0);
+          digitalWrite(LED_BUILTIN, LOW);
     }
 }
 
