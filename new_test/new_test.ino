@@ -4,10 +4,11 @@
 int contador_ldr = 0;
 int ledPin = 23;
 int ledChannel = 0;
-int ledMode = MODE_MANUAL;
 
 int ldrPin = 34;
 int ldrMax = 4000;
+char ledMode;
+int ledValue;
 
 int thresholdValue = 50;
 
@@ -19,8 +20,6 @@ void setup() {
 
   Serial.printf("DBG SmartLamp Initialized.\n");
 }
-
-
 
 
 void loop() {
