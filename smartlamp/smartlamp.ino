@@ -13,12 +13,12 @@ const unsigned long interval_main = 1/00;
 #define MODE_AUTO 1
 #define RST_LED 2
 
-int ledPin = 14;
+const int ledPin = 14;
 // int ledChannel = 0;
 int ledValue = 0;
 int ledMode = MODE_MANUAL;
 
-int ldrPin = 34;
+const int ldrPin = 34;
 int ldrMax = 4000;
 
 int thresholdValue = 50;
@@ -49,12 +49,13 @@ void setup()
 
 void loop()
 {
+    
     static char serialBuffer[64];
     static int bufferIndex = 0;
 
     String serialCommand;
 
-    ledValue = digitalRead(ledPin);
+    
 
 
     //para tirar o delay, tive que trabalhar no buffer pra receber os comandos, pois o serial não tava conseguindo ler
@@ -94,10 +95,12 @@ void loop()
     if (currentMillis - lastReading >= interval)
     {
         lastReading = currentMillis;
-        Serial.printf("LDR_VALUE PERIOD: %d\n", ldrGetValue());
+        Serial.printf("RES GET_LDR  %d\n", ldrGetValue());
     }
 
     ledUpdate();
+    
+//    ledValue = digitalRead(ledPin);
 
     
 //    delay(100);/
@@ -148,14 +151,18 @@ void processCommand(String command)
     {
         ledMode = RST_LED;
         ledUpdate();
+        ledStatus();
         Serial.printf("RES GET_LED %d\n", ledValue);
     }
 
     else if (command == "GET_LDR")
         Serial.printf("RES GET_LDR %d\n", ldrGetValue());
 
-    else if (command == "GET_LED")
+    else if (command == "GET_LED") {
+      ledStatus();
+    
         Serial.printf("RES GET_LED %d\n", ledValue);
+        }
 
     else if (command == "GET_THRESHOLD")
         Serial.printf("RES GET_THRESHOLD %d\n", thresholdValue);
@@ -188,4 +195,8 @@ int ldrGetValue()
     // Serial.printf("DBG LDR_MAX=%d, LDR_ANALOG=%d, LDR_VALUE=%d\n", ldrMax, ldrAnalog, ldrValue);
 
     return ldrValue > 100 ? 100 : ldrValue;
+}
+
+void ledStatus() {
+  ledValue = digitalRead(ledPin);
 }
