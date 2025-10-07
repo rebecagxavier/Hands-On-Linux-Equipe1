@@ -1,44 +1,115 @@
-// Defina os pinos de LED e LDR
-// Defina uma variável com valor máximo do LDR (4000)
-// Defina uma variável para guardar o valor atual do LED (10)
-int ledPin;
+#define MODE_MANUAL 0
+#define MODE_AUTO   1
+
+int contador_ldr = 0;
+int ledPin = 23;
+int ledChannel = 0;
+
+int ldrPin = 34;
+int ldrMax = 4000;
+char ledMode;
 int ledValue;
 
-int ldrPin;
-// Faça testes no sensor ldr para encontrar o valor maximo e atribua a variável ldrMax
-int ldrMax;
+int thresholdValue = 50;
 
 void setup() {
-    Serial.begin(9600);
-    
-    pinMode(ledPin, OUTPUT);
-    pinMode(ldrPin, INPUT);
-    
-    Serial.printf("SmartLamp Initialized.\n");
+  Serial.begin(9600);
 
+  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(ledPin, OUTPUT);
 
+  Serial.printf("DBG SmartLamp Initialized.\n");
 }
 
-// Função loop será executada infinitamente pelo ESP32
+
 void loop() {
-    //Obtenha os comandos enviados pela serial 
-    //e processe-os com a função processCommand
+  String serialCommand;
+
+  while (Serial.available() > 0) {
+    char serialChar = Serial.read();
+    serialCommand += serialChar;
+
+    if (serialChar == '\n') {
+      processCommand(serialCommand);
+      serialCommand = "";
+    }
+  }
+
+  ledUpdate();
+  delay(100);
+  contador_ldr++;
+  if (contador_ldr == 20) {
+    Serial.printf("RES GET_LDR %d\n", ldrGetValue());
+    contador_ldr = 0;
+  }
+
 }
 
 
 void processCommand(String command) {
-    // compare o comando com os comandos possíveis e execute a ação correspondente      
+  command.trim();
+  command.toUpperCase();
+
+  // Serial.println("DBG Received command: " + command);
+
+  if (command.startsWith("SET_LED ")) {
+    int ledTmp = command.substring(8).toInt();
+    if (ledTmp >= 0 && ledTmp <= 100) {
+      ledValue = ledTmp;
+      ledMode  = MODE_MANUAL;
+      ledUpdate();
+      Serial.printf("RES SET_LED 1\n");
+    }
+    else {
+      Serial.printf("RES SET_LED -1\n");
+    }
+  }
+  else if (command.startsWith("SET_THRESHOLD ")) {
+    int thresholdTmp = command.substring(14).toInt();
+    if (thresholdTmp >= 0 && thresholdTmp <= 100) {
+      thresholdValue = thresholdTmp;
+      ledMode = MODE_AUTO;
+      ledUpdate();
+      Serial.printf("RES SET_THRESHOLD 1\n");
+    }
+    else {
+      Serial.printf("RES SET_THRESHOLD -1\n");
+    }
+  }
+
+  else if (command == "GET_LDR")
+    Serial.printf("RES GET_LDR %d\n", ldrGetValue());
+
+  else if (command == "GET_LED")
+    Serial.printf("RES GET_LED %d\n", ledValue);
+
+  else if (command == "GET_THRESHOLD")
+    Serial.printf("RES GET_THRESHOLD %d\n", thresholdValue);
+
+  else
+    Serial.println("ERR Unknown command.");
+
 }
 
-// Função para atualizar o valor do LED
+
 void ledUpdate() {
-    // Valor deve convertar o valor recebido pelo comando SET_LED para 0 e 255
-    // Normalize o valor do LED antes de enviar para a porta correspondente
+  if (ledMode == MODE_MANUAL || (ledMode == MODE_AUTO && ldrGetValue() < thresholdValue)) {
+    // Liga o LED
+    digitalWrite(ledPin, HIGH); 
+    digitalWrite(LED_BUILTIN, HIGH);
+  }
+  else {
+    // Desliga o LED
+    digitalWrite(ledPin, LOW); 
+  }
 }
 
-// Função para ler o valor do LDR
+
 int ldrGetValue() {
-    // Leia o sensor LDR e retorne o valor normalizado entre 0 e 100
-    // faça testes para encontrar o valor maximo do ldr (exemplo: aponte a lanterna do celular para o sensor)       
-    // Atribua o valor para a variável ldrMax e utilize esse valor para a normalização
+  int ldrAnalog = analogRead(ldrPin);
+  int ldrValue = 100 * ldrAnalog / ldrMax;
+
+  // Serial.printf("DBG LDR_MAX=%d, LDR_ANALOG=%d, LDR_VALUE=%d\n", ldrMax, ldrAnalog, ldrValue);
+
+  return ldrValue > 100 ? 100 : ldrValue;
 }
