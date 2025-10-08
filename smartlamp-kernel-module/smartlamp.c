@@ -110,16 +110,16 @@ static int usb_probe(struct usb_interface *interface, const struct usb_device_id
     usb_out_buffer = kmalloc(usb_max_size, GFP_KERNEL);
 
     // Chama a função para configurar a porta serial antes de usar
-    ret = smartlamp_config_serial(smartlamp_device);
-    if (ret)
-    {
-        printk(KERN_ERR "SmartLamp: Falha na configuração da serial\n");
-        kfree(usb_in_buffer);
-        kfree(usb_out_buffer);
-        sysfs_remove_group(sys_obj, &attr_group);
-        kobject_put(sys_obj);
-        return ret;
-    }
+    // ret = smartlamp_config_serial(smartlamp_device);
+    // if (ret)
+    // {
+    //     printk(KERN_ERR "SmartLamp: Falha na configuração da serial\n");
+    //     kfree(usb_in_buffer);
+    //     kfree(usb_out_buffer);
+    //     sysfs_remove_group(sys_obj, &attr_group);
+    //     kobject_put(sys_obj);
+    //     return ret;
+    // }
 
     LDR_value = usb_read_serial();
 

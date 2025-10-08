@@ -33,8 +33,6 @@ __used __section("__versions") = {
 	{ 0xed75f9ac, "sysfs_create_group" },
 	{ 0x2bd64ad0, "usb_find_common_endpoints" },
 	{ 0xd710adbf, "__kmalloc_noprof" },
-	{ 0x4b24f11f, "usb_control_msg" },
-	{ 0xa6c58518, "sysfs_remove_group" },
 	{ 0x056c43c7, "usb_deregister" },
 	{ 0xd272d446, "__fentry__" },
 	{ 0x8134d220, "usb_register_driver" },
@@ -61,8 +59,6 @@ __used __section("__version_ext_crcs") = {
 	0xed75f9ac,
 	0x2bd64ad0,
 	0xd710adbf,
-	0x4b24f11f,
-	0xa6c58518,
 	0x056c43c7,
 	0xd272d446,
 	0x8134d220,
@@ -88,8 +84,6 @@ __used __section("__version_ext_names") =
 	"sysfs_create_group\0"
 	"usb_find_common_endpoints\0"
 	"__kmalloc_noprof\0"
-	"usb_control_msg\0"
-	"sysfs_remove_group\0"
 	"usb_deregister\0"
 	"__fentry__\0"
 	"usb_register_driver\0"
